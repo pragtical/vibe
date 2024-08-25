@@ -5,8 +5,8 @@ local config = require "core.config"
 local style = require "core.style"
 local translate = require "core.doc.translate"
 
-local misc = require "plugins.lite-xl-vibe.misc"
-local ResultsView = require "plugins.lite-xl-vibe.ResultsView"
+local misc = require "plugins.vibe.misc"
+local ResultsView = require "plugins.vibe.ResultsView"
 
 local function dv()
   return core.active_view
@@ -275,7 +275,7 @@ local function project_search(_, list, _, fn)
       return
     end
     if file.type == "file" then
-      local path = (dir_name == core.project_dir and "" or (dir_name .. PATHSEP))
+      local path = (dir_name == core.root_project().path and "" or (dir_name .. PATHSEP))
       find_all_matches_in_file(list, path .. file.filename, fn)
       if #list >= config.vibe.inline_search_maxN then
         return

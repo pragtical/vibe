@@ -4,8 +4,8 @@ local common = require "core.common"
 local config = require "core.config"
 local translate = require "core.doc.translate"
 
-local kb = require "plugins.lite-xl-vibe.keyboard"
-local misc = require "plugins.lite-xl-vibe.misc"
+local kb = require "plugins.vibe.keyboard"
+local misc = require "plugins.vibe.misc"
 
 local function dv()
   return core.active_view

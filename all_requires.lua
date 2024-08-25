@@ -13,11 +13,11 @@ local style = require "core.style"
 local config = require "core.config"
 local common = require "core.common"
 local translate = require "core.doc.translate"
-local misc = require "plugins.lite-xl-vibe.misc"
+local misc = require "plugins.vibe.misc"
 
-local SavableView = require "plugins.lite-xl-vibe.SavableView"
-local ResultsView = require "plugins.lite-xl-vibe.ResultsView"
-local FileView = require "plugins.lite-xl-vibe.FileView"
+local SavableView = require "plugins.vibe.SavableView"
+local ResultsView = require "plugins.vibe.ResultsView"
+local FileView = require "plugins.vibe.FileView"
 
 local vibe = core.vibe
 

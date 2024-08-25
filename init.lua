@@ -8,11 +8,11 @@ local style = require "core.style"
 local DocView = require "core.docview"
 local CommandView = require "core.commandview"
 
-local config = require "plugins.lite-xl-vibe.config"
+local config = require "plugins.vibe.config"
 
 local vibe = {}
 core.vibe = vibe
-vibe.kb = require "plugins.lite-xl-vibe.keyboard"
+vibe.kb = require "plugins.vibe.keyboard"
 vibe.mode = 'insert'
 vibe.debug_str = 'test debug_str'
 vibe.last_stroke = ''
@@ -26,28 +26,28 @@ vibe.flags['run_repeat_seq'] = false
 vibe.flags['recording_macro'] = false
 vibe.flags['requesting_help_stroke_sugg'] = false
 
-local misc = require "plugins.lite-xl-vibe.misc"
+local misc = require "plugins.vibe.misc"
 vibe.misc = misc
 
 vibe.target_register = nil
 vibe.target_register = nil
-vibe.registers = require("plugins.lite-xl-vibe.registers")
+vibe.registers = require("plugins.vibe.registers")
 vibe.stroke_suggestions = {}
 
-vibe.translate = require "plugins.lite-xl-vibe.translate"
-require "plugins.lite-xl-vibe.keymap"
-vibe.com = require "plugins.lite-xl-vibe.com"
-vibe.marks = require "plugins.lite-xl-vibe.marks"
-vibe.interface = require "plugins.lite-xl-vibe.interface"
+vibe.translate = require "plugins.vibe.translate"
+require "plugins.vibe.keymap"
+vibe.com = require "plugins.vibe.com"
+vibe.marks = require "plugins.vibe.marks"
+vibe.interface = require "plugins.vibe.interface"
 
-require "plugins.lite-xl-vibe.FileView"
+require "plugins.vibe.FileView"
 
-require "plugins.lite-xl-vibe.visual_mode"
-vibe.history = require "plugins.lite-xl-vibe.history"
+require "plugins.vibe.visual_mode"
+vibe.history = require "plugins.vibe.history"
 
-vibe.workspace = require "plugins.lite-xl-vibe.vibeworkspace"
+vibe.workspace = require "plugins.vibe.vibeworkspace"
 
-vibe.help = require "plugins.lite-xl-vibe.help"
+vibe.help = require "plugins.vibe.help"
 
 local function dv()
   return core.active_view
@@ -339,5 +339,5 @@ core.add_thread(function()
   core.log("vibe:wait_for_startup finished")
 end, 'vibe:wait_for_startup')
 
-core.log("lite-xl-vibe loaded.")
+core.log("vibe loaded.")
 return vibe

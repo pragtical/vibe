@@ -15,8 +15,8 @@ local StatusView = require "core.statusview"
 local DocView = require "core.docview"
 local View = require "core.view"
 
-local com = require("plugins.lite-xl-vibe.com")
-local misc = require "plugins.lite-xl-vibe.misc"
+local com = require("plugins.vibe.com")
+local misc = require "plugins.vibe.misc"
 
 local status = {}
 
@@ -89,9 +89,6 @@ function StatusView:get_items()
     core.vibe.debug_str,
   }, {
     -- style.icon_font, "g",
-    style.font, style.dim, self.separator2,
-    style.text, self.separator2, #core.docs, " / ",
-    #core.project_files, " files",
     style.code_font,
     style.text, ' |', string.format('#%3s', core.vibe.num_arg),
     style.text, '|', string.format("%7s", core.vibe.last_stroke),

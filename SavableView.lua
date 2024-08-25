@@ -24,7 +24,7 @@ local keymap = require "core.keymap"
 local style = require "core.style"
 local View = require "core.view"
 
-local misc = require "plugins.lite-xl-vibe.misc"
+local misc = require "plugins.vibe.misc"
 local SavableView = View:extend()
 
 function SavableView:new(title)

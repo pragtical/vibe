@@ -16,8 +16,8 @@ local DocView = require "core.docview"
 local keymap = require "core.keymap"
 local translate = require "core.doc.translate"
 
-local kb = require "plugins.lite-xl-vibe.keyboard"
-local misc = require "plugins.lite-xl-vibe.misc"
+local kb = require "plugins.vibe.keyboard"
+local misc = require "plugins.vibe.misc"
 
 -- Good, funally some N freaking map
 keymap.nmap = {}

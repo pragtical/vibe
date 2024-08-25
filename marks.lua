@@ -29,9 +29,9 @@ local keymap = require "core.keymap"
 local Doc = require "core.doc"
 local style = require "core.style"
 
-local misc = require "plugins.lite-xl-vibe.misc"
-local kb = require "plugins.lite-xl-vibe.keyboard"
-local ResultsView = require "plugins.lite-xl-vibe.ResultsView"
+local misc = require "plugins.vibe.misc"
+local kb = require "plugins.vibe.keyboard"
+local ResultsView = require "plugins.vibe.ResultsView"
 
 local function dv()
   return core.active_view

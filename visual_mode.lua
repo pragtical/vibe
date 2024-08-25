@@ -17,14 +17,14 @@ local style = require "core.style"
 local DocView = require "core.docview"
 local CommandView = require "core.commandview"
 
-local config = require "plugins.lite-xl-vibe.config"
+local config = require "plugins.vibe.config"
 
-local misc = require "plugins.lite-xl-vibe.misc"
+local misc = require "plugins.vibe.misc"
 
 local vibe = core.vibe
 
-vibe.translate = require "plugins.lite-xl-vibe.translate"
-require "plugins.lite-xl-vibe.keymap"
+vibe.translate = require "plugins.vibe.translate"
+require "plugins.vibe.keymap"
 
 ----------------------------------------------------------------------------
 

@@ -15,10 +15,10 @@ local keymap = require "core.keymap"
 local style = require "core.style"
 local translate = require "core.doc.translate"
 
-local misc = require "plugins.lite-xl-vibe.misc"
-  
-local ResultsView = require "plugins.lite-xl-vibe.ResultsView"
-  
+local misc = require "plugins.vibe.misc"
+
+local ResultsView = require "plugins.vibe.ResultsView"
+
 local FileView = ResultsView:extend()
 
 function FileView:save_info()
@@ -47,10 +47,10 @@ end
 
 function FileView:new(path, history, history_cur_ix)
   self.module = "FileView"
-  self.path = path or core.project_dir
+  self.path = path or core.root_project().path
   self.history = history or { path }
   self.history_cur_ix = history_cur_ix or 1
-  
+
   FileView.super.new(self,{
     title="F|"..self.path,
     items_fun=function()
@@ -83,8 +83,8 @@ function FileView:new(path, history, history_cur_ix)
         item.Ext = item.type=="dir" and "<dir>" or misc.file_ext(item.filename)
       end
       return items
-    end, 
-    
+    end,
+
     on_click_fun=function(res)
       if res.type == "dir" then
         local dv = core.active_view
@@ -92,8 +92,8 @@ function FileView:new(path, history, history_cur_ix)
       else
         core.root_view:open_doc(core.open_doc(res.abs_filename))
       end
-    end, 
-    
+    end,
+
     sort_funs={
       ['name'] = function(item)
         return item.type:sub(1,1)..item.search_text
@@ -119,7 +119,7 @@ end
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
-  
+
 command.add(nil, {
   ["vibe:open-file"] = function()
     local view = core.active_view
@@ -127,7 +127,7 @@ command.add(nil, {
       local dirname, filename = misc.doc_abs_filename(view.doc):match("(.*)[/\\](.+)$")
       if dirname then
         dirname = core.normalize_to_project_dir(dirname)
-        local text = dirname == core.project_dir and "" or common.home_encode(dirname) .. PATHSEP
+        local text = dirname == core.root_project().path and "" or common.home_encode(dirname) .. PATHSEP
         core.command_view:set_text(text)
       end
     end
@@ -161,7 +161,7 @@ command.add(nil, {
       table.insert(items, current_doc_path)
     end
     -- then all working dirs
-    for _, dir in ipairs(core.project_directories) do
+    for _, dir in ipairs(core.projects) do
       if dir.name ~= current_doc_path then
         table.insert(items,dir.name)
       end
@@ -190,10 +190,10 @@ command.add(FileView, {
     else
       fv.history_cur_ix = fv.history_cur_ix - 1
       fv.path = fv.history[fv.history_cur_ix]
-      fv:fill_results()    
+      fv:fill_results()
     end
   end,
-  
+
   ["vibe:fileview:go-forward"] = function()
     local fv = core.active_view
     if fv.history[fv.history_cur_ix+1] == nil then
@@ -214,10 +214,10 @@ command.add(FileView, {
       fv:goto_path(misc.path_up(fv.path))
     end
   end,
-  
+
   ["vibe:fileview:rename"] = function()
     local item = core.active_view:get_selected_item()
-    
+
     misc.command_view_enter({
       title="Rename to:",
       init=item.filename,
@@ -237,7 +237,7 @@ command.add(FileView, {
       end
     })
   end,
-  
+
   ["vibe:fileview:delete-item"] = function()
     local item = core.active_view:get_selected_item()
     misc.command_view_modal({
@@ -260,7 +260,7 @@ command.add(FileView, {
       end
     })
   end,
-  
+
   ["vibe:fileview:create-file"] = function()
     local root_path = core.active_view.path
     misc.command_view_enter({
@@ -280,7 +280,7 @@ command.add(FileView, {
       end
     })
   end,
-  
+
   ["vibe:fileview:create-dir"] = function()
     local root_path = core.active_view.path
     misc.command_view_enter({
@@ -300,7 +300,7 @@ command.add(FileView, {
       end
     })
   end,
-  
+
   ["vibe:fileview:add-current-dir-to-workspace"] = function()
     misc.command_view_modal({
       title = "Really Add Directory?",

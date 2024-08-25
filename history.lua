@@ -20,9 +20,9 @@ local config = require "core.config"
 local common = require "core.common"
 local translate = require "core.doc.translate"
 
-local kb = require "plugins.lite-xl-vibe.keyboard"
-local misc = require "plugins.lite-xl-vibe.misc"
-local ResultsView = require "plugins.lite-xl-vibe.ResultsView"
+local kb = require "plugins.vibe.keyboard"
+local misc = require "plugins.vibe.misc"
+local ResultsView = require "plugins.vibe.ResultsView"
 
 local history = {}
 

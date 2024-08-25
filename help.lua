@@ -6,9 +6,9 @@ local keymap = require "core.keymap"
 local style = require "core.style"
 local StatusView = require "core.statusview"
 
-local kb = require "plugins.lite-xl-vibe.keyboard"
-local misc = require "plugins.lite-xl-vibe.misc"
-local ResultsView = require "plugins.lite-xl-vibe.ResultsView"
+local kb = require "plugins.vibe.keyboard"
+local misc = require "plugins.vibe.misc"
+local ResultsView = require "plugins.vibe.ResultsView"
 
 local vibe = core.vibe
 local help = {}

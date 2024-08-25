@@ -35,8 +35,8 @@ local common = require "core.common"
 local keymap = require "core.keymap"
 local style = require "core.style"
 
-local misc = require "plugins.lite-xl-vibe.misc"
-local SavableView = require "plugins.lite-xl-vibe.SavableView"
+local misc = require "plugins.vibe.misc"
+local SavableView = require "plugins.vibe.SavableView"
 local ResultsView = SavableView:extend()
 
 local function default_sort_fun(item)

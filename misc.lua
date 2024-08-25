@@ -1,6 +1,6 @@
 --[[
 
-This is a miscellaneous module for lite-xl-vibe
+This is a miscellaneous module for vibe
 (duh)
 
 main intentions are
@@ -46,130 +46,8 @@ local function doc()
 end
 
 
--------------------------------------------------------------------------------
--- Lite compatibility                                                        --
--------------------------------------------------------------------------------
-
-local USERDIR = rawget(_G,'USERDIR')
-
-if USERDIR == nil then
-  core.log("Lite compatibility..")
-  USERDIR = EXEDIR .. PATHSEP .. 'user' -- debug.getinfo(1).source:match("@?(.*/)")
-  keymap.add_direct = keymap.add_direct or keymap.add
-  
-  core.project_dir = core.project_dir or os.getenv("PWD") or io.popen("cd"):read()
-  core.project_directories = core.project_directories or {{name=core.project_dir}}
-  core.normalize_to_project_dir = core.normalize_to_project_dir or function(path)
-    return path
-  end
-  common.home_expand = common.home_expand or function(a) return a end
-  common.home_encode = common.home_encode or function(a) return a end
-  common.home_encode_list = common.home_encode_list or function(a) return a end
-  
-  common.serialize = common.serialize or function(val)
-    if type(val) == "string" then
-      return string.format("%q", val)
-    elseif type(val) == "table" then
-      local t = {}
-      for k, v in pairs(val) do
-        table.insert(t, "[" .. common.serialize(k) .. "]=" .. common.serialize(v))
-      end
-      return "{" .. table.concat(t, ",") .. "}"
-    end
-    return tostring(val)
-  end
-  
-  misc.core__quit__orig = core.quit
-  
-  core.quit = function()
-    core.confirm_close_docs(core.docs, function() misc.core__quit__orig(true) end)
-  end
-  
-  RootView.get_active_node_default = RootView.get_active_node_default or RootView.get_active_node
-
-  Node.close_all_docviews = Node.close_all_docviews or function(self,keep_active)
-    if self.type == "leaf" then
-      local i = 1
-      while i <= #self.views do
-        local view = self.views[i]
-        if view:is(DocView) 
-           and not view:is(CommandView) 
-           and not view:is(StatusView) 
-           and not view:is(misc.EmptyView) 
-           -- and (not keep_active or view ~= self.active_view) 
-          then
-          table.remove(self.views, i)
-        else
-          i = i + 1
-        end
-      end
-      if #self.views == 0 and self.is_primary_node then
-        self:add_view(EmptyView())
-      end
-    else
-      self.a:close_all_docviews(keep_active)
-      self.b:close_all_docviews(keep_active)
-      if self.a:is_empty() and not self.a.is_primary_node then
-        self:consume(self.b)
-      elseif self.b:is_empty() and not self.b.is_primary_node then
-        self:consume(self.a)
-      end
-    end
-  end
-  
-  Node.is_empty = Node.is_empty or function (self)
-    if self.type == "leaf" then
-      return #self.views == 0 or (#self.views == 1 and self.views[1]:is(EmptyView))
-    else
-      return self.a:is_empty() and self.b:is_empty()
-    end
-  end
-
-  RootView.close_all_docviews = RootView.close_all_docviews or function(self, keep_active)
-    
-  --   self.root_node:close_all_docviews(keep_active)
-  -- end
-  -- local function temp()
-    -- close current window while it changes anything
-    local nViews = 0
-    while (core.root_view.root_node:nViews() ~= nViews) do
-      nViews = core.root_view.root_node:nViews()
-      if core.active_view.vibe_parent_node then
-        core.active_view.vibe_parent_node:close()
-      else 
-        break
-      end
-    end
-
-    -- self.root_node:close_all_docviews(keep_active)
-  end
-  
-  core.set_project_dir = core.set_project_dir or function(new_dir, change_project_fn)
-    local chdir_ok = pcall(system.chdir, new_dir)
-    if chdir_ok then
-      if change_project_fn then change_project_fn() end
-      core.project_dir = core.project_dir or os.getenv("PWD") or io.popen("cd"):read()
-      core.project_directories = core.project_directories or {{name=core.project_dir}}
-      core.project_files = {}
-      core.project_files_limit = false
-      return true
-    end
-    return false
-  end
-  
-  core.get_project_files = core.get_project_files or function()
-    return coroutine.wrap(function()
-      for _,f in ipairs(core.project_files) do
-        coroutine.yield(core.project_dir, f)
-      end
-    end)
-  end
-
-end
-
-
 misc.doc_abs_filename = function(doc)
-  if doc==nil then 
+  if doc==nil then
     doc = core.active_view.doc
   end
   return doc and (doc.abs_filename or doc.filename and system.absolute_path(doc.filename))
@@ -377,7 +255,7 @@ function string:is_command()
 end
 
 function string:is_stroke_seq()
-  -- well. 
+  -- well.
   return not self:is_command()
 end
 
@@ -421,7 +299,7 @@ function misc.path_up(path)
   end
   local rpath = path:gsub(PATHSEP..'[^'..PATHSEP..']+$','')
   -- gsub returns two values, discard the second one
-  return rpath 
+  return rpath
 end
 
 function misc.path_join(path, dir, ...)
@@ -540,7 +418,7 @@ end
 
 function table:take_keys(keys)
   return table.list_to_dict_map(
-    keys, 
+    keys,
     function(key) return self[key] end
   )
 end
@@ -733,7 +611,7 @@ function misc.draw_items(items, x, y, w, h, draw_fn)
 
   local font = style.font
   local color = style.text
-  
+
   if type(items)=="string" then
     items = {items}
   end
@@ -1103,11 +981,11 @@ function misc.exec_with_requires(text)
     -- try and guess the last assignment to display var's new value
     var_name = text:match("(%a[%a%d]*)%s*=[^\n]+$")
     F,err = load(
-      misc.require_str .. "\n\n" 
-      .. text 
+      misc.require_str .. "\n\n"
+      .. text
       .. "\nreturn " .. (var_name or '"done"')
     )
-  end  
+  end
   if F then
     local ok
     ok, F = pcall(function() return assert(F)() end)
@@ -1123,7 +1001,7 @@ function misc.exec_with_requires(text)
   end
   -- aand restore strict
   enable_strict_global()
-  
+
   return F, err
 end
 
@@ -1184,25 +1062,25 @@ command.add(nil, {
 function misc.exec_input(insert_result)
   misc.command_view_enter({
     init= misc.exec_text or '',
-    title= insert_result and "Exec input and insert result" or "Exec", 
+    title= insert_result and "Exec input and insert result" or "Exec",
     submit= function(text, item)
       -- save to history (regardless of load success)
       if (item == nil) or (text ~= item.text) then
         table.insert(misc.exec_history, text)
       end
       local res, err = misc.exec_with_requires(text)
-      
+
       if res and insert_result then
         local line,col = core.active_view.doc:get_selection()
         core.active_view.doc:insert(line, col, misc.str(res))
       end
-    end, 
+    end,
     suggest= function(text, item)
       return common.fuzzy_match(
         table.list_concat(
           misc.exec_history,
           config.vibe.exec_input_online_execute and misc.predict_exec_input(text, item) or nil
-        ), 
+        ),
         text
       )
     end
@@ -1226,11 +1104,11 @@ function misc.predict_exec_input(text, item)
     last_WORD = ''
     last_WORD_start = #text+1
   end
-  
+
   local dot_pos = last_WORD:find('[%.%:][^%.%:]*$')
-  
+
   local value = nil
-  
+
   if dot_pos == nil then
     core.log("no dot")
     r = table.list_concat(table.keys(_G), misc.require_locals)
@@ -1249,11 +1127,11 @@ function misc.predict_exec_input(text, item)
     local metatable = value
     if not misc.is_table(metatable) then
       metatable = misc.exec_with_requires('_G["'..type(value)..'"]')
-      
+
       if metatable==nil then
         metatable = value
       end
-      
+
       if not misc.is_table(metatable) then
         metatable = getmetatable(metatable)
       end
@@ -1267,15 +1145,15 @@ function misc.predict_exec_input(text, item)
       )
     end
   end
-  
+
   log(r)
-  
-  -- this would've been cool, but only on suggestion select, 
+
+  -- this would've been cool, but only on suggestion select,
   --   which current COmmandView does not support (see also #9)
   -- if item and item.text == text and last_WORD and #last_WORD>0 then
   --   log(misc.exec_with_requires(last_WORD))
   -- end
-  
+
   return r
 end
 
@@ -1419,12 +1297,12 @@ misc.command_view_enter = function(title, options)
   --  cancel
   --  validate
   -- }
-  if options==nil then 
+  if options==nil then
     options = title
   else
     options.title = title
   end
-  
+
   if misc.is_table(options.suggest) and options.suggest[1] then
     if misc.is_string(options.suggest[1]) then
       options.suggest = table.map(options.suggest, function(text) return {text=text} end)
@@ -1454,9 +1332,9 @@ function misc.command_view_modal(options)
   options.init = options.init or options.options[1]
   if options.on_answer then
     if misc.is_table(options.on_answer) then
-    
+
     elseif misc.is_function(options.on_answer) then
-    
+
     else
       core.error('Unknown input: on_answer type %s', type(on_answer))
     end

@@ -4,11 +4,11 @@ local common = require "core.common"
 local DocView = require "core.docview"
 local LogView = require "core.logview"
 
-local misc = require "plugins.lite-xl-vibe.misc"
-local SavableView = require "plugins.lite-xl-vibe.SavableView"
+local misc = require "plugins.vibe.misc"
+local SavableView = require "plugins.vibe.SavableView"
 
 
-core.log("lite-xl-vibe.vibeworkspace")
+core.log("vibe.vibeworkspace")
 local vibeworkspace = {}
 vibeworkspace.add_save = {
   ['misc.exec_history'] = {},
@@ -18,11 +18,11 @@ vibeworkspace.add_save = {
 }
 -- Oh yeah I just did that.
 -- The above initialized is the sth sth I've come up with to save stuff.
--- It is a table 
+-- It is a table
 --  each value is a table
---   if value has `save` key, 
+--   if value has `save` key,
 --    use it as function to get sth serializeable
---   otherwise, 
+--   otherwise,
 --    use the key to the value as input for misc.get_dotsep
 --      (which basically does misc.get_dotsep('misc.lala') == vibe.misc.lala )
 --     and get serialized version of that to save to the workspace file
@@ -169,7 +169,7 @@ function vibeworkspace.load_view(t)
   end
   if t.type == "vibe_savable" then
     -- or should it be loadable?)
-    return require("plugins.lite-xl-vibe."..t.module).load_info(t.info)
+    return require("plugins.vibe."..t.module).load_info(t.info)
   end
   return require(t.module)()
 end
@@ -227,10 +227,10 @@ end
 
 
 function vibeworkspace.save_directories()
-  local project_dir = core.project_dir
+  local project_dir = core.root_project().path
   local dir_list = {}
-  for i = 2, #core.project_directories do
-    dir_list[#dir_list + 1] = common.relative_path(project_dir, core.project_directories[i].name)
+  for i = 2, #core.projects do
+    dir_list[#dir_list + 1] = common.relative_path(project_dir, core.projects[i].name)
   end
   return dir_list
 end
@@ -266,7 +266,7 @@ function vibeworkspace.save_workspace(filename)
     local node_text = common.serialize(vibeworkspace.save_node(root))
     local dir_text = common.serialize(vibeworkspace.save_directories())
     local str = string.format("return { path = %q, documents = %s, directories = %s, add_saved= %s }\n"
-                              , core.project_dir, node_text, dir_text, vibeworkspace.add_save_str())
+                              , core.root_project().path, node_text, dir_text, vibeworkspace.add_save_str())
     fp:write(str)
     fp:close()
     vibeworkspace.abs_filename = workspace_filename
@@ -278,7 +278,7 @@ end
 
 
 function vibeworkspace.load_workspace(_workspace)
-  local workspace = _workspace or vibeworkspace.consume_workspace_file(core.project_dir)
+  local workspace = _workspace or vibeworkspace.consume_workspace_file(core.root_project().path)
   if workspace then
     local root = vibeworkspace.get_unlocked_root(core.root_view.root_node)
     local active_view = vibeworkspace.load_node(root, workspace.documents)
@@ -323,7 +323,7 @@ function vibeworkspace.open_workspace_file(_filename)
     core.set_project_dir(workspace.path)
     vibeworkspace.load_workspace(workspace)
     vibeworkspace.abs_filename = filename
-    
+
     vibeworkspace.add_saved = workspace.add_saved
     if workspace.add_saved then
       vibeworkspace.load_saved(workspace.add_saved)
@@ -341,7 +341,7 @@ function core.run(...)
   core.vibe.need_to_load_workspace = #core.docs == 0
   core.run = run
   run(...)
-  
+
   core.log('/vibe core run')
   return temp
 end
@@ -373,7 +373,7 @@ end
 
 command.add(nil,{
   ["vibe:workspace:save-workspace-as"] = function()
-    core.command_view:set_text(core.normalize_to_project_dir(core.project_dir .. '.ws'))
+    core.command_view:set_text(core.normalize_to_project_dir(core.root_project().path .. '.ws'))
     core.command_view:enter("Save Workspace As", function(filename)
       vibeworkspace.save_workspace(common.home_expand(filename))
     end, function (text)
@@ -382,7 +382,7 @@ command.add(nil,{
   end,
   ["vibe:workspace:open-workspace-file"] = function()
     local view = core.active_view
-    core.command_view:set_text(core.normalize_to_project_dir(core.project_dir .. '.ws'))
+    core.command_view:set_text(core.normalize_to_project_dir(core.root_project().path .. '.ws'))
     core.command_view:enter("Open Workspace File", function(text)
       vibeworkspace.open_workspace_file(system.absolute_path(common.home_expand(text)))
     end, function (text)
@@ -397,5 +397,5 @@ command.add( function() return vibeworkspace.abs_filename end, {
   ["vibe:workspace:save-workspace"] = vibeworkspace.save_workspace,
 })
 
-core.log("/lite-xl-vibe.vibeworkspace")
+core.log("/vibe.vibeworkspace")
 return vibeworkspace
