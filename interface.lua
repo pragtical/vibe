@@ -190,7 +190,7 @@ local function draw_text(x, y, color)
   local th = style.big_font:get_height()
   local dh = 2 * th + style.padding.y * 2
   local x1, y1 = x, y + (dh - th) / 2
-  x = renderer.draw_text(style.big_font, "Lite XL Vibe", x1, y1, color)
+  x = renderer.draw_text(style.big_font, "Pragtical Vibe", x1, y1, color)
   renderer.draw_text(style.font, "version " .. VERSION, x1, y1 + th, color)
   x = x + style.padding.x
   renderer.draw_rect(x, y, math.ceil(1 * SCALE), dh, color)

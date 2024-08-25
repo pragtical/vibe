@@ -1,6 +1,6 @@
 --[[
 --
-FileView, a View for minimalistic file browser in lite xl
+FileView, a View for minimalistic file browser in pragtical
 --
 dunno really why I do this. Probably because it's fun))
 --
